@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TaskController;
 
+// Endpoint register
+Route::post('/register', [AuthController::class, 'register']);
+
 // Endpoint login
 Route::post('/login', [AuthController::class, 'login']);
 
