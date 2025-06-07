@@ -11,6 +11,9 @@ Route::post('/register', [AuthController::class, 'register']);
 // Endpoint login
 Route::post('/login', [AuthController::class, 'login']);
 
+// Endpoint logout
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
 Route::middleware('auth:sanctum')->group(function () {
     // Menampilkan semua tugas milik user yang sedang login
     Route::get('/tasks', [TaskController::class, 'index']);
