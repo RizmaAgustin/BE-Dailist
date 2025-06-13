@@ -50,7 +50,7 @@ class TaskController extends Controller
         return response()->json($task);
     }
 
-    // ✅ Update tugas
+    // ✅ Update tugas (PERBAIKAN: hanya update field yang boleh diubah)
     public function update(Request $request, $id)
     {
         $task = Task::where('id', $id)->where('user_id', Auth::id())->first();
@@ -59,7 +59,8 @@ class TaskController extends Controller
             return response()->json(['message' => 'Tugas tidak ditemukan'], 404);
         }
 
-        $task->update($request->all());
+        // Hanya update field yang boleh diubah, user_id tidak boleh diupdate!
+        $task->update($request->only(['title', 'description', 'category', 'priority', 'deadline']));
         return response()->json($task);
     }
 
