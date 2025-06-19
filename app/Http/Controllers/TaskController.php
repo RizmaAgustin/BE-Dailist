@@ -24,6 +24,7 @@ class TaskController extends Controller
             'category' => 'nullable|string',
             'priority' => 'nullable|string',
             'deadline' => 'nullable|date',
+            'is_completed' => 'nullable|boolean',
         ]);
 
         $task = Task::create([
@@ -33,6 +34,10 @@ class TaskController extends Controller
             'category'    => $request->category,
             'priority'    => $request->priority,
             'deadline'    => $request->deadline,
+            // Tambahkan is_completed jika ada pada request, default 0
+            'is_completed' => $request->has('is_completed')
+                ? (($request->input('is_completed') == 1 || $request->input('is_completed') === '1' || $request->input('is_completed') === true) ? 1 : 0)
+                : 0,
         ]);
 
         return response()->json($task, 201);
@@ -50,7 +55,7 @@ class TaskController extends Controller
         return response()->json($task);
     }
 
-    // ✅ Update tugas (PERBAIKAN: hanya update field yang boleh diubah)
+    // ✅ Update tugas, termasuk is_completed
     public function update(Request $request, $id)
     {
         $task = Task::where('id', $id)->where('user_id', Auth::id())->first();
@@ -59,8 +64,15 @@ class TaskController extends Controller
             return response()->json(['message' => 'Tugas tidak ditemukan'], 404);
         }
 
-        // Hanya update field yang boleh diubah, user_id tidak boleh diupdate!
-        $task->update($request->only(['title', 'description', 'category', 'priority', 'deadline']));
+        $data = $request->only(['title', 'description', 'category', 'priority', 'deadline']);
+
+        // Tambahkan is_completed ke $data jika ada di request
+        if ($request->has('is_completed')) {
+            $data['is_completed'] = ($request->input('is_completed') == 1 || $request->input('is_completed') === '1' || $request->input('is_completed') === true) ? 1 : 0;
+        }
+
+        $task->update($data);
+
         return response()->json($task);
     }
 
